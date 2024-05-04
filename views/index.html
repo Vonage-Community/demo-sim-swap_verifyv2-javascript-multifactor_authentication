@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Verify API and SIM Swap API</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/client.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>Multifactor Security Authentication</h1>
+    </header>
+    <main>
+      <p>________________</p>
+      <p>
+        Enter your phone number, and if your SIM hasn't been swapped in the last
+        few days, you'll get an SMS containing a PIN to authenticate.
+      </p>
+
+      <form id="loginForm">
+        <label
+          >Phone number:
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            autocomplete="phone"
+            required
+          />
+        </label>
+        <input type="submit" value="Send authentication PIN" id="signup_btn" />
+      </form>
+
+      <p>________________</p>
+
+      <p>Already received the authentication code? Add it here to login!</p>
+      <form id="pinForm">
+        <label
+          >PIN:
+          <input
+            type="text"
+            id="pin"
+            name="pin"
+            autocomplete="one-time-code"
+            required
+          />
+        </label>
+        <input type="submit" value="Login" id="login_btn" />
+      </form>
+
+      <h3 id="feedback"></h3>
+    </main>
+  </body>
+</html>
