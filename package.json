@@ -12,6 +12,7 @@
   "dependencies": {
     "@vonage/server-sdk": "^3.14.0",
     "axios": "^1.6.8",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
   }
 }

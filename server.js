@@ -80,7 +80,7 @@ async function checkSim(phoneNumber) {
       simSwapApiUrl,
       {
         phoneNumber: phoneNumber,
-        maxAge: 2110,
+        maxAge: 72,
       },
       {
         headers: {

@@ -1,55 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Verify API and SIM Swap API</title>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="/client.js" defer></script>
-  </head>
-  <body>
-    <header>
-      <h1>Multifactor Security Authentication</h1>
-    </header>
-    <main>
-      <p>________________</p>
-      <p>
-        Enter your phone number, and if your SIM hasn't been swapped in the last
-        few days, you'll get an SMS containing a PIN to authenticate.
-      </p>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-      <form id="loginForm">
-        <label
-          >Phone number:
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            autocomplete="phone"
-            required
-          />
-        </label>
-        <input type="submit" value="Send authentication PIN" id="signup_btn" />
-      </form>
+<script src="/client.js" defer></script>
 
-      <p>________________</p>
+<h2>Login Form</h2>
 
-      <p>Already received the authentication code? Add it here to login!</p>
-      <form id="pinForm">
-        <label
-          >PIN:
-          <input
-            type="text"
-            id="pin"
-            name="pin"
-            autocomplete="one-time-code"
-            required
-          />
-        </label>
-        <input type="submit" value="Login" id="login_btn" />
-      </form>
+<div id="modalSMS" class="modal">
 
-      <h3 id="feedback"></h3>
-    </main>
-  </body>
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p><b>Recover account</b><p>
+
+    <form id="phoneForm">
+      <div class="container">
+        <label for="phone"><b>Phone number:</b></label>
+        <input type="text" placeholder="Enter phone number" id="phone" required />
+        <button type="submit" id="signup_btn">Send code</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div id="modalSwapped" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p><b>Warning! We have detected that your SIM Card was swapped!</b><p>
+    <button type="submit" id="accept_swapped">Yes, it was me</button>
+    <button class="cancelbtn" id="cancel_swapped">No, it was not me</button>
+  </div>
+</div>
+
+<div id="modalVerification" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="pinForm">
+      <div class="container">
+        <label for="pin"><b>PIN:</b></label>
+        <input type="text" placeholder="Enter PIN code" name="pin" required />
+        <button type="submit" id="login_btn">Login</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<form action="" method="post">
+  <div class="imgcontainer">
+    <img src="avatar.png" alt="Avatar" class="avatar">
+  </div>
+
+  <div class="container">
+    <label for="uname"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" name="uname" required>
+
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="psw" required>
+        
+    <button type="submit">Login</button>
+    <label>
+      <input type="checkbox" checked="checked" name="remember"> Remember me
+    </label>
+  </div>
+
+</form>
+
+  <div class="container" style="background-color:#f1f1f1">
+    <button type="button" class="forgotbtn" id="forgotButton">Forgot Password</button>
+  </div>
+
+</body>
 </html>
