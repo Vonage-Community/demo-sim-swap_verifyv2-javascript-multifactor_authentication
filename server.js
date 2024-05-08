@@ -24,12 +24,17 @@ const authReqUrl = "https://api-eu.vonage.com/oauth2/bc-authorize";
 const tokenUrl = "https://api-eu.vonage.com/oauth2/token";
 const simSwapApiUrl = "https://api-eu.vonage.com/camara/sim-swap/v040/check";
 
+let pwd = "123";
 let verifyRequestId = null;
 
-// Serve index.html
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views/index.html"));
 });
+
+app.get("/main", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/main.html"));
+});
+
 
 // Authenticate function
 async function authenticate(scope) {
@@ -80,7 +85,7 @@ async function checkSim(phoneNumber) {
       simSwapApiUrl,
       {
         phoneNumber: phoneNumber,
-        maxAge: 72,
+        maxAge: 2100,
       },
       {
         headers: {
@@ -99,66 +104,51 @@ async function checkSim(phoneNumber) {
   }
 }
 
-// Handle incoming requests to verify phone number
-app.post("/verify", async (req, res) => {
+app.post("/sendcode", async (req, res) => {
+  try {
+    const response = await vonage.verify2.newRequest({
+      brand: process.env.BRAND_NAME,
+      workflow: [
+        {
+          channel: Channels.SMS,
+          to: process.env.RECIPIENT_NUMBER,
+        },
+      ],
+    });
+    verifyRequestId = response.requestId;
+    res.json({
+      message: "Verification code sent.",
+      verifycode: true,
+      request_id: verifyRequestId,
+    });
+  } catch (error) {
+    console.error("Error during verification:", error);
+    res.status(500).json({ message: "Error processing request.", verifyCode: false});
+  }
+});
+
+app.post("/simswap", async (req, res) => {
   const { phone } = req.body;
-
-  // testing without actually using the sim_swap
-  //   try {
-  //     const response = await vonage.verify2.newRequest({
-  //       brand: process.env.BRAND_NAME,
-  //       workflow: [
-  //         {
-  //           channel: Channels.SMS,
-  //           to: process.env.RECIPIENT_NUMBER,
-  //         },
-  //       ],
-  //     });
-  //     verifyRequestId = response.requestId;
-  //     res.json({
-  //       message: "Verification code sent.",
-  //       request_id: verifyRequestId,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error during verification:", error);
-  //     res.status(500).json({ message: "Error processing request." });
-  //   }
-
   try {
     const simSwapped = await checkSim(phone);
     if (simSwapped) {
       res.json({
-        message: "SIM has been swapped recently. Verify differently.",
+        swapped: true,
       });
     } else {
-      try {
-        const response = await vonage.verify2.newRequest({
-          brand: process.env.BRAND_NAME,
-          workflow: [
-            {
-              channel: Channels.SMS,
-              to: process.env.RECIPIENT_NUMBER,
-            },
-          ],
-        });
-        verifyRequestId = response.requestId;
-        res.json({
-          message: "Verification code sent.",
-          request_id: verifyRequestId,
-        });
-      } catch (error) {
-        console.error("Error during verification:", error);
-        res.status(500).json({ message: "Error processing request." });
-      }
+      res.json({
+        swapped: false,
+      });
     }
   } catch (error) {
-    console.error("Error during verification:", error);
+    console.error("Error during checking SIM swap:", error);
     res.status(500).json({ message: "Error processing request." });
   }
 });
 
+
 // Handle incoming requests to verify the PIN
-app.post("/login", (req, res) => {
+app.post("/verify", (req, res) => {
   const { pin } = req.body;
   console.log(pin);
   console.log(verifyRequestId);
@@ -177,6 +167,22 @@ app.post("/login", (req, res) => {
       console.error("Error during PIN verification:", err);
       res.status(500).json({ message: "Error during PIN verification." });
     });
+});
+
+app.post("/update", (req, res) => {
+  const { newPass } = req.body;
+  pwd = newPass;
+  console.log(pwd);
+  res.json({ message: "Success" });
+});
+
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if (password == pwd) {
+    res.redirect('/main');
+  } else {
+    res.status(401).json({ message: "Invalid user and password" });
+  }
 });
 
 app.listen(3000, () => {
