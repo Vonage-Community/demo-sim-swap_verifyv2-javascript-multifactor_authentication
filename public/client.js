@@ -1,8 +1,29 @@
-const phoneForm = document.getElementById("loginForm");
+const phoneForm = document.getElementById("phoneForm");
 const pinForm = document.forms[1];
 const phoneInput = document.getElementById("phone");
 const pinInput = document.getElementById("pin");
-const feedback = document.getElementById("feedback");
+
+var modals = document.querySelectorAll('.modal');
+
+const smsModal = document.getElementById("modalSMS");
+const forgotBtn = document.getElementById("forgotButton");
+
+// Shows the modal
+forgotBtn.onclick = function() {
+  smsModal.style.display = "block";
+}
+
+// close modals
+var spans = document.getElementsByClassName("close");
+
+// When the user clicks on <span> (x), close the modal
+for (var i = 0; i < spans.length; i++) {
+ spans[i].onclick = function() {
+    for (var index in modals) {
+      if (typeof modals[index].style !== 'undefined') modals[index].style.display = "none"; 
+    }
+ }
+}
 
 // Function to send data to the server
 function sendData(url, data) {
@@ -15,7 +36,7 @@ function sendData(url, data) {
   })
     .then((response) => response.json())
     .then((data) => {
-      feedback.textContent = data.message;
+      //feedback.textContent = data.message;
       if (data.message.includes("Verification code sent.")) {
         alert("Verification code sent successfully!");
         phoneForm.style.display = "none";
@@ -27,7 +48,7 @@ function sendData(url, data) {
     })
     .catch((error) => {
       console.error("Error:", error);
-      feedback.textContent = "An error occurred. Please try again.";
+      alert("An error occurred. Please try again");
     });
 }
 
@@ -35,10 +56,11 @@ function sendData(url, data) {
 phoneForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const phone = phoneInput.value.trim();
+  console.log(phone);
   if (phone) {
     sendData("/verify", { phone });
   } else {
-    feedback.textContent = "Please enter a valid phone number.";
+    alert("Please enter a valid phone number.");
   }
 });
 
@@ -49,6 +71,6 @@ pinForm.addEventListener("submit", (event) => {
   if (pin) {
     sendData("/login", { pin });
   } else {
-    feedback.textContent = "Please enter the verification code.";
+    alert("Please enter the verification code.");
   }
 });
