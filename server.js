@@ -1,11 +1,10 @@
-// server.js
 require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
 const path = require("path");
-const { Vonage } = require("@vonage/server-sdk");
 const { Auth } = require("@vonage/auth");
-const { Verify2 } = require("@vonage/verify2");
+const { Vonage } = require("@vonage/server-sdk");
+const { Channels } = require("@vonage/verify2");
 
 const app = express();
 app.use(express.json());
@@ -16,28 +15,29 @@ const vonage = new Vonage(
     apiKey: process.env.VONAGE_API_KEY,
     apiSecret: process.env.VONAGE_API_SECRET,
     applicationId: process.env.VONAGE_APPLICATION_ID,
-    privateKey: process.env.VONAGE_PRIVATE_KEY_PATH,
+    privateKey: process.env.VONAGE_PRIVATE_KEY,
   })
 );
 
-const verify2 = new Verify2(vonage);
 const scope = "dpv:FraudPreventionAndDetection#check-sim-swap";
 const authReqUrl = "https://api-eu.vonage.com/oauth2/bc-authorize";
 const tokenUrl = "https://api-eu.vonage.com/oauth2/token";
 const simSwapApiUrl = "https://api-eu.vonage.com/camara/sim-swap/v040/check";
 
-let pwd = "123";
 let verifyRequestId = null;
+let pwd = "123"; // Initial password
 
+// Serve the index.html file
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views/index.html"));
 });
 
+// Serve the main.html file
 app.get("/main", (req, res) => {
   res.sendFile(path.join(__dirname, "views/main.html"));
 });
 
-// Authenticate function
+// Authenticate function for SIM Swap API
 async function authenticate(scope) {
   try {
     const authReqResponse = await axios.post(
@@ -86,7 +86,7 @@ async function checkSim(phoneNumber) {
       simSwapApiUrl,
       {
         phoneNumber: phoneNumber,
-        maxAge: 2100,
+        maxAge: 72,
       },
       {
         headers: {
@@ -105,15 +105,15 @@ async function checkSim(phoneNumber) {
   }
 }
 
-// Handle sending the verification code
+// Route to send a verification code via Verify2 API using Channels
 app.post("/sendcode", async (req, res) => {
   try {
-    const response = await verify2.newRequest({
+    const response = await vonage.verify2.newRequest({
       brand: process.env.BRAND_NAME,
       workflow: [
         {
-          channel: "sms",
-          to: process.env.RECIPIENT_NUMBER,
+          channel: Channels.SMS, // Using SMS as the channel
+          to: process.env.RECIPIENT_NUMBER, // Replace with dynamic input if required
         },
       ],
     });
@@ -125,9 +125,7 @@ app.post("/sendcode", async (req, res) => {
     });
   } catch (error) {
     console.error("Error during verification:", error);
-    res
-      .status(500)
-      .json({ message: "Error processing request.", verifyCode: false });
+    res.status(500).json({ message: "Error processing request.", verifycode: false });
   }
 });
 
@@ -174,10 +172,8 @@ app.post("/update", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   if (password === pwd) {
-    // Successful login
     res.json({ message: "Success" });
   } else {
-    // Unauthorized response
     res.status(401).json({ message: "Invalid user and password" });
   }
 });
