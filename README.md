@@ -18,14 +18,20 @@ This project is a web application demonstrating how to strengthen multifactor se
 
 ## Getting Started
 
-1. Clone the repository
-
+1. Clone the repository and change directories
+   ```bash
+   git clone https://github.com/Vonage-Community/demo-sim-swap_verifyv2-javascript-multifactor_authentication.git
+   cd demo-sim-swap_verifyv2-javascript-multifactor_authentication
+   ```
 2. Install the required packages:
    ```bash
    npm install
    ```
 
-3. Create a `.env` file in the project root and include the following environment variables:
+3. Move the `.env.example` file to `.env` file in the project root and include the following environment variables:
+   ```bash
+   mv .env.example .env
+   ```
    ```bash
    VONAGE_API_KEY=<your-api-key>
    VONAGE_API_SECRET=<your-api-secret>
@@ -37,7 +43,7 @@ This project is a web application demonstrating how to strengthen multifactor se
    RECIPIENT_NUMBER=<number-to-receive-verification>
    ```
 
-4. Run the application:
+5. Run the application:
    ```bash
    node server.js
    ```
