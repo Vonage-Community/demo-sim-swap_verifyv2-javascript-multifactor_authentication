@@ -48,6 +48,11 @@ This project is a web application demonstrating how to strengthen multifactor se
    node server.js
    ```
 
+5. Launch your web browser and enter the URL:
+   ```bash
+   http://localhost:3000/
+   ```
+
 ## How It Works
 
 ### SIM Swap API
