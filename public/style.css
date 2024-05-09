@@ -1,5 +1,12 @@
-body {font-family: Arial, Helvetica, sans-serif;}
-form {border: 3px solid #f1f1f1;}
+/* Styles for index.html */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #ffffff; /* Set a default background color */
+}
+
+form {
+  border: 3px solid #f1f1f1;
+}
 
 input[type=text], input[type=password] {
   width: 100%;
@@ -44,7 +51,6 @@ button:hover {
 img.avatar {
   width: 10%;
   height: 10%;
-
   border-radius: 50%;
 }
 
@@ -60,11 +66,12 @@ span.psw {
 /* Change styles for span and cancel button on extra small screens */
 @media screen and (max-width: 300px) {
   span.psw {
-     display: block;
-     float: none;
+    display: block;
+    float: none;
   }
+
   .cancelbtn {
-     width: 100%;
+    width: 100%;
   }
 }
 
@@ -79,8 +86,8 @@ span.psw {
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Modal Content */
@@ -105,4 +112,70 @@ span.psw {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Styles for main.html */
+.main-page {
+  background: #111115;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.heart {
+  font-size: 6em;
+  position: relative;
+}
+
+.heartbeat {
+  position: relative;
+  z-index: 1;
+  animation: beat 2s linear infinite;
+}
+
+.heartecho {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  animation: echo 2s linear infinite;
+}
+
+@keyframes beat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(0.9);
+  }
+  21% {
+    transform: scale(1.1) skew(0.004turn);
+  }
+  28% {
+    transform: scale(1) skew(0.008turn);
+  }
+  35% {
+    transform: scale(1) skew(0);
+  }
+}
+
+@keyframes echo {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  14% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  21% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
 }
