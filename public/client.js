@@ -1,9 +1,10 @@
+// Get relevant form elements
 const loginForm = document.getElementById("loginForm");
 const userInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 
 const phoneForm = document.getElementById("phoneForm");
-const pinForm = document.forms[1];
+const pinForm = document.getElementById("pinForm");
 const phoneInput = document.getElementById("phone");
 const pinInput = document.getElementById("pin");
 
@@ -21,66 +22,71 @@ const changePassModal = document.getElementById("modalNewPassword");
 const acceptSwappedBtn = document.getElementById("accept_swapped");
 const cancelSwappedBtn = document.getElementById("cancel_swapped");
 
-var modals = document.querySelectorAll('.modal');
+const forgotBtn = document.getElementById("forgotButton");
 
 let currentModal = "";
 
-const forgotBtn = document.getElementById("forgotButton");
-
+// Function to close the current modal
 function closeCurrentModal() {
-  currentModal.style.display = "none";
-  currentModal = "";
+  if (currentModal) {
+    currentModal.style.display = "none";
+    currentModal = "";
+  }
 }
 
+// Function to show a specific modal
 function showModal(modal) {
   modal.style.display = "block";
-  if (currentModal != "" && currentModal != modal) {
+  if (currentModal && currentModal !== modal) {
     currentModal.style.display = "none";
   }
   currentModal = modal;
 }
 
-forgotBtn.onclick = function() {
-  showModal(smsModal)
-}
+forgotBtn.onclick = function () {
+  showModal(smsModal);
+};
 
-// close modals
-var spans = document.getElementsByClassName("close");
-
-// When the user clicks on <span> (x), close the modal
-for (var i = 0; i < spans.length; i++) {
- spans[i].onclick = function() {
-    for (var index in modals) {
-      if (typeof modals[index].style !== 'undefined') modals[index].style.display = "none"; 
-    }
- }
-}
-
-function sendCode() {
-  sendData("/sendcode").then((data) => {
-    if (data.verifycode) {
-      console.log(data);
-   } else {
-      alert("There was an error sending the SMS code. Please try again later");
-      showModal(smsModal)
-    }
-  });
+// Close modals when clicking on close button
+const spans = document.getElementsByClassName("close");
+for (let i = 0; i < spans.length; i++) {
+  spans[i].onclick = function () {
+    closeCurrentModal();
+  };
 }
 
 // Function to send data to the server
-function sendData(url, data) {
+async function sendData(url, data) {
   try {
-    return fetch(url, {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    })
-      .then((response) => { return response.json()})
-  } catch (e) {
-    console.error(e);
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error(`Error during data request to ${url}:`, error);
+    alert("An error occurred while communicating with the server.");
   }
+}
+
+// Function to send a verification code
+function sendCode() {
+  sendData("/sendcode", {}).then((data) => {
+    if (data && data.verifycode) {
+      console.log("Verification code sent successfully:", data);
+    } else {
+      alert("There was an error sending the verification code. Please try again later.");
+    }
+  }).catch((error) => {
+    console.error("Error during verification code sending:", error);
+    alert("An error occurred while trying to send the verification code.");
+  });
 }
 
 // Handle phone number form submission
@@ -107,10 +113,10 @@ pinForm.addEventListener("submit", (event) => {
   const pin = pinInput.value.trim();
   if (pin) {
     sendData("/verify", { pin }).then((data) => {
-      if (data.message != "Success"){
-        alert("Invalid verification code. Please try again");
+      if (data.message !== "Success") {
+        alert("Invalid verification code. Please try again.");
       } else {
-      showModal(changePassModal);
+        showModal(changePassModal);
       }
     });
   } else {
@@ -123,13 +129,15 @@ updatePassForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const newPass = passInput.value.trim();
   const confirmPass = passReInput.value.trim();
-  if (newPass == confirmPass) {
+  if (newPass === confirmPass) {
     sendData("/update", { newPass }).then((data) => {
-      alert("Password successfully updated");
-      closeCurrentModal();
+      if (data.message === "Success") {
+        alert("Password successfully updated.");
+        closeCurrentModal();
+      }
     });
   } else {
-    alert("Passwords don't match");
+    alert("Passwords don't match.");
   }
 });
 
@@ -139,23 +147,30 @@ loginForm.addEventListener("submit", (event) => {
   const username = userInput.value.trim();
   const password = passwordInput.value.trim();
 
-  sendData("/login", { username, password }).then((data) => {
-    if (data.message != "Ok"){
-      alert("Invalid user and password");
-    }
-  });
-
+  sendData("/login", { username, password })
+    .then((data) => {
+      if (data.message !== "Success") {
+        alert("Invalid user and password.");
+      } else {
+        // Redirect to the /main page
+        window.location.href = "/main";
+      }
+    })
+    .catch((error) => {
+      console.error("Error during login:", error);
+      alert("An error occurred during login. Please try again.");
+    });
 });
 
+// Handle acceptance of swapped SIM card
 acceptSwappedBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  event.stopPropagation();
   showModal(verifyModal);
   sendCode();
 });
 
+// Handle cancellation of swapped SIM card
 cancelSwappedBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  event.stopPropagation();
   closeCurrentModal();
 });

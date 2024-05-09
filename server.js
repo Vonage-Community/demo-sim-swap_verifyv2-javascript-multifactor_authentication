@@ -2,8 +2,8 @@ require("dotenv").config();
 const axios = require("axios");
 const express = require("express");
 const path = require("path");
-const { Vonage } = require("@vonage/server-sdk");
 const { Auth } = require("@vonage/auth");
+const { Vonage } = require("@vonage/server-sdk");
 const { Channels } = require("@vonage/verify2");
 
 const app = express();
@@ -24,19 +24,20 @@ const authReqUrl = "https://api-eu.vonage.com/oauth2/bc-authorize";
 const tokenUrl = "https://api-eu.vonage.com/oauth2/token";
 const simSwapApiUrl = "https://api-eu.vonage.com/camara/sim-swap/v040/check";
 
-let pwd = "123";
 let verifyRequestId = null;
+let pwd = "123"; // Initial password
 
+// Serve the index.html file
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "views/index.html"));
 });
 
+// Serve the main.html file
 app.get("/main", (req, res) => {
   res.sendFile(path.join(__dirname, "views/main.html"));
 });
 
-
-// Authenticate function
+// Authenticate function for SIM Swap API
 async function authenticate(scope) {
   try {
     const authReqResponse = await axios.post(
@@ -85,7 +86,7 @@ async function checkSim(phoneNumber) {
       simSwapApiUrl,
       {
         phoneNumber: phoneNumber,
-        maxAge: 2100,
+        maxAge: 72,
       },
       {
         headers: {
@@ -104,14 +105,15 @@ async function checkSim(phoneNumber) {
   }
 }
 
+// Route to send a verification code via Verify2 API using Channels
 app.post("/sendcode", async (req, res) => {
   try {
     const response = await vonage.verify2.newRequest({
       brand: process.env.BRAND_NAME,
       workflow: [
         {
-          channel: Channels.SMS,
-          to: process.env.RECIPIENT_NUMBER,
+          channel: Channels.SMS, // Using SMS as the channel
+          to: process.env.RECIPIENT_NUMBER, // Replace with dynamic input if required
         },
       ],
     });
@@ -123,43 +125,33 @@ app.post("/sendcode", async (req, res) => {
     });
   } catch (error) {
     console.error("Error during verification:", error);
-    res.status(500).json({ message: "Error processing request.", verifyCode: false});
+    res.status(500).json({ message: "Error processing request.", verifycode: false });
   }
 });
 
+// Handle SIM swap check
 app.post("/simswap", async (req, res) => {
   const { phone } = req.body;
   try {
     const simSwapped = await checkSim(phone);
-    if (simSwapped) {
-      res.json({
-        swapped: true,
-      });
-    } else {
-      res.json({
-        swapped: false,
-      });
-    }
+    res.json({
+      swapped: simSwapped,
+    });
   } catch (error) {
-    console.error("Error during checking SIM swap:", error);
+    console.error("Error checking SIM swap:", error);
     res.status(500).json({ message: "Error processing request." });
   }
 });
 
-
-// Handle incoming requests to verify the PIN
+// Handle PIN verification
 app.post("/verify", (req, res) => {
   const { pin } = req.body;
-  console.log(pin);
-  console.log(verifyRequestId);
   vonage.verify2
     .checkCode(verifyRequestId, pin)
     .then((status) => {
       if (status === "completed") {
-        console.log(`The status is ${status}`);
         res.json({ message: "Success" });
       } else {
-        console.log(`The status is ${status}`);
         res.json({ message: "Invalid verification code. Please try again." });
       }
     })
@@ -169,17 +161,18 @@ app.post("/verify", (req, res) => {
     });
 });
 
+// Update password
 app.post("/update", (req, res) => {
   const { newPass } = req.body;
   pwd = newPass;
-  console.log(pwd);
   res.json({ message: "Success" });
 });
 
+// Handle login request
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-  if (password == pwd) {
-    res.redirect('/main');
+  if (password === pwd) {
+    res.json({ message: "Success" });
   } else {
     res.status(401).json({ message: "Invalid user and password" });
   }
