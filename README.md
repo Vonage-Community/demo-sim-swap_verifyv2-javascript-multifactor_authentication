@@ -1,53 +1,60 @@
-# Multifactor Authentication with Vonage
+# Multifactor Security Authentication Using Vonage APIs
 
-This project demonstrates how to implement multifactor authentication using Vonage's Verify v2 and SIM Swap APIs. The application allows users to verify their identity through a phone number and a PIN code while protecting against SIM swap fraud.
+## Overview
+
+This project is a web application demonstrating how to strengthen multifactor security authentication using the Vonage SIM Swap API and Verify v2 API. The application includes a simple bank dashboard and a login form. If the SIM Swap API detects that a phone number was swapped recently, the verification code will not be sent, and additional security measures will be applied. A verification code will be sent via the Verify v2 API to authenticate the user if no recent swap is detected.
 
 ## Features
 
-- **Phone Number Verification**: Users can verify their identity using a phone number and a PIN.
-- **SIM Swap Detection**: The application checks if a phone number has been swapped recently.
-- **Secure Authentication**: Provides an extra layer of security for user authentication.
+- A login form to enter and verify a phone number
+- Secure multifactor authentication using Vonage Verify v2
+- SIM Swap detection to prevent compromised logins
+- Simple bank dashboard after successful login
 
 ## Prerequisites
 
-To run this project, you'll need:
+- A Vonage Developer Account
+- Node.js and npm installed
 
-- Node.js (>=14)
-- npm or yarn
-- A Vonage account with API key, secret, and application ID
-- A private key for your Vonage application
+## Getting Started
 
-## Installation
+1. Clone the repository
 
-1. **Clone the repository**:
-
-   ```bash
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-
-2. **Install dependencies**:
-
+2. Install the required packages:
    ```bash
    npm install
    ```
 
-3. **Configure environment variables**:
-
-   Create a `.env` file in the project root and set the necessary environment variables from `.env.example`
-
-## Usage
-
-1. **Start the server**:
-
+3. Create a `.env` file in the project root and include the following environment variables:
    ```bash
-   npm start
+   VONAGE_API_KEY=<your-api-key>
+   VONAGE_API_SECRET=<your-api-secret>
+   VONAGE_APPLICATION_ID=<your-application-id>
+   VONAGE_PRIVATE_KEY=<path-to-your-private-key>
+   JWT=<jwt-token>
+   MSISDN=<phone-number-to-check>
+   BRAND_NAME=<your-brand-name>
+   RECIPIENT_NUMBER=<number-to-receive-verification>
    ```
 
-2. **Expose the server using LocalTunnel**:
-
-   Use LocalTunnel to make the server publicly accessible:
-
+4. Run the application:
    ```bash
-   npx localtunnel --port 3000
+   node server.js
    ```
+
+## How It Works
+
+### SIM Swap API
+
+The application uses the Vonage SIM Swap API to check whether a given phone number has been swapped in the last few days. This protects users from attacks that exploit SIM swaps.
+
+### Verify v2 API
+
+The Verify v2 API sends a one-time code to the user's phone number for authentication. This verification code will be sent if the SIM Swap API determines that the number has not been recently swapped.
+
+### Application Flow
+
+1. The user enters their phone number on the login page.
+2. The SIM Swap API checks whether the number was swapped recently.
+3. a verification code is sent via the Verify v2 API if no swap is detected.
+4. After successful verification, the user can access the bank dashboard.
