@@ -4,7 +4,7 @@ const userInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 
 const phoneForm = document.getElementById("phoneForm");
-const pinForm = document.forms[1];
+const pinForm = document.getElementById("pinForm");
 const phoneInput = document.getElementById("phone");
 const pinInput = document.getElementById("pin");
 
@@ -55,7 +55,39 @@ for (let i = 0; i < spans.length; i++) {
   };
 }
 
+// Function to send data to the server
+async function sendData(url, data) {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error(`Error during data request to ${url}:`, error);
+    alert("An error occurred while communicating with the server.");
+  }
+}
 
+// Function to send a verification code
+function sendCode() {
+  sendData("/sendcode", {}).then((data) => {
+    if (data && data.verifycode) {
+      console.log("Verification code sent successfully:", data);
+    } else {
+      alert("There was an error sending the verification code. Please try again later.");
+    }
+  }).catch((error) => {
+    console.error("Error during verification code sending:", error);
+    alert("An error occurred while trying to send the verification code.");
+  });
+}
 
 // Handle phone number form submission
 phoneForm.addEventListener("submit", (event) => {
@@ -109,26 +141,6 @@ updatePassForm.addEventListener("submit", (event) => {
   }
 });
 
-// Function to send data to the server
-async function sendData(url, data) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response.json(); // This line can only be reached if the response is JSON
-  } catch (error) {
-    console.error(`Error during data request to ${url}:`, error);
-    alert("An error occurred while communicating with the server.");
-  }
-}
-
 // Login handler
 loginForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -137,11 +149,11 @@ loginForm.addEventListener("submit", (event) => {
 
   sendData("/login", { username, password })
     .then((data) => {
-      if (data && data.message === "Success") {
+      if (data.message !== "Success") {
+        alert("Invalid user and password.");
+      } else {
         // Redirect to the /main page
         window.location.href = "/main";
-      } else {
-        alert("Invalid user and password.");
       }
     })
     .catch((error) => {
