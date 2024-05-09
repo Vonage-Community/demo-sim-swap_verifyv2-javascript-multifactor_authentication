@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Account recovery demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +12,6 @@
 <h2>Login Form</h2>
 
 <div id="modalSMS" class="modal">
-
   <div class="modal-content">
     <span class="close">&times;</span>
     <p><b>Recover account</b><p>
@@ -23,16 +23,6 @@
         <button type="submit" id="signup_btn">Send code</button>
       </div>
     </form>
-
-  </div>
-</div>
-
-<div id="modalSwapped" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <p><b>Warning! We have detected that your SIM Card was swapped!</b><p>
-    <button type="submit" id="accept_swapped">Yes, it was me</button>
-    <button class="cancelbtn" id="cancel_swapped">No, it was not me</button>
   </div>
 </div>
 
@@ -42,26 +32,56 @@
     <form id="pinForm">
       <div class="container">
         <label for="pin"><b>PIN:</b></label>
-        <input type="text" placeholder="Enter PIN code" name="pin" required />
-        <button type="submit" id="login_btn">Login</button>
+        <input type="text" placeholder="Enter PIN code" id="pin" required />
+        <button type="submit" id="verify_btn">Send verification</button>
       </div>
     </form>
   </div>
 </div>
 
-<form action="" method="post">
-  <div class="imgcontainer">
-    <img src="avatar.png" alt="Avatar" class="avatar">
+<div id="modalSwapped" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="confirmSwapForm">
+      <div class="container">
+        <b>Warning! We have detected that your SIM Card was swapped!</b>
+        <button type="submit" id="accept_swapped">Yes, it was me</button>
+        <button class="cancelbtn" id="cancel_swapped">No, it wasn't me</button>
+      </div>
+    </form>
   </div>
+</div>
 
+
+<div id="modalNewPassword" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p><b>Set a new password</b><p>
+
+    <form id="changePwdForm">
+      <div class="container">
+        <label for="pass1"><b>New Password</b></label>
+        <input type="password" placeholder="Enter Password" id="pass1" required>
+        <label for="pass2"><b>Retype Password</b></label>
+        <input type="password" placeholder="Retype Password" id="pass2" required>
+
+        <button type="submit" id="changepassword_btn">Change password</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<form id="loginForm" method="post">
   <div class="container">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required>
+    <label for="username"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" id="username" required>
 
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
+    <label for="password"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" id="password" required>
         
     <button type="submit">Login</button>
+    <label id="message"><b></b></label>
     <label>
       <input type="checkbox" checked="checked" name="remember"> Remember me
     </label>
