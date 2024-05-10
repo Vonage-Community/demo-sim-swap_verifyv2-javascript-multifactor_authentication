@@ -71,7 +71,7 @@ async function sendData(url, data) {
     return response.json();
   } catch (error) {
     console.error(`Error during data request to ${url}:`, error);
-    alert("An error occurred while communicating with the server.");
+    //alert("An error occurred while communicating with the server.");
   }
 }
 
@@ -82,6 +82,7 @@ function sendCode() {
       console.log("Verification code sent successfully:", data);
     } else {
       alert("There was an error sending the verification code. Please try again later.");
+      closeCurrentModal();
     }
   }).catch((error) => {
     console.error("Error during verification code sending:", error);
@@ -101,6 +102,10 @@ phoneForm.addEventListener("submit", (event) => {
         showModal(verifyModal);
         sendCode();
       }
+    })
+    .catch((error) => {
+      console.log(error);
+      alert("An error occurred while checking your SIM Swap.");
     });
   } else {
     alert("Please enter a valid phone number.");
@@ -118,6 +123,10 @@ pinForm.addEventListener("submit", (event) => {
       } else {
         showModal(changePassModal);
       }
+    })
+    .catch((error) => {
+      console.log(error);
+      alert("Invalid verification code. Please try again.");
     });
   } else {
     alert("Please enter the verification code.");
@@ -135,6 +144,10 @@ updatePassForm.addEventListener("submit", (event) => {
         alert("Password successfully updated.");
         closeCurrentModal();
       }
+    })
+    .catch((error) => {
+      console.log(error);
+      alert("An error ocurred while updating your password. Please try again.");
     });
   } else {
     alert("Passwords don't match.");
