@@ -24,6 +24,7 @@ const authReqUrl = "https://api-eu.vonage.com/oauth2/bc-authorize";
 const tokenUrl = "https://api-eu.vonage.com/oauth2/token";
 const simSwapApiUrl = "https://api-eu.vonage.com/camara/sim-swap/v040/check";
 
+let phoneNumber = null;
 let verifyRequestId = null;
 let pwd = "123"; // Initial password
 
@@ -38,12 +39,12 @@ app.get("/main", (req, res) => {
 });
 
 // Authenticate function for SIM Swap API
-async function authenticate(scope) {
+async function authenticate(phone, scope) {
   try {
     const authReqResponse = await axios.post(
       authReqUrl,
       {
-        login_hint: process.env.MSISDN,
+        login_hint: phone,
         scope: scope,
       },
       {
@@ -79,14 +80,14 @@ async function authenticate(scope) {
 }
 
 // Check if the phone number has been recently swapped
-async function checkSim(phoneNumber) {
+async function checkSim() {
   try {
-    const accessToken = await authenticate(scope);
+    const accessToken = await authenticate(phoneNumber, scope);
     const response = await axios.post(
       simSwapApiUrl,
       {
         phoneNumber: phoneNumber,
-        maxAge: 72,
+        maxAge: process.env.MAX_AGE,
       },
       {
         headers: {
@@ -107,13 +108,16 @@ async function checkSim(phoneNumber) {
 
 // Route to send a verification code via Verify2 API using Channels
 app.post("/sendcode", async (req, res) => {
+  // overrides default phone number with the RECIPIENT_NUMBER variable
+  const phone = process.env.RECIPIENT_NUMBER ? process.env.RECIPIENT_NUMBER: phoneNumber;
+ 
   try {
     const response = await vonage.verify2.newRequest({
-      brand: process.env.BRAND_NAME,
+     brand: "Vonage Bank",
       workflow: [
         {
           channel: Channels.SMS, // Using SMS as the channel
-          to: process.env.RECIPIENT_NUMBER, // Replace with dynamic input if required
+          to: phone,
         },
       ],
     });
@@ -131,9 +135,9 @@ app.post("/sendcode", async (req, res) => {
 
 // Handle SIM swap check
 app.post("/simswap", async (req, res) => {
-  const { phone } = req.body;
+  phoneNumber = req.body.phone;
   try {
-    const simSwapped = await checkSim(phone);
+    const simSwapped = await checkSim();
     res.json({
       swapped: simSwapped,
     });
