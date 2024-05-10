@@ -171,7 +171,7 @@ loginForm.addEventListener("submit", (event) => {
     })
     .catch((error) => {
       console.error("Error during login:", error);
-      alert("An error occurred during login. Please try again.");
+      alert("Invalid user and password.");
     });
 });
 

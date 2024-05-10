@@ -13,14 +13,14 @@ This project is a web application demonstrating how to strengthen multifactor se
 
 ## Prerequisites
 
-- A Vonage Developer Account
-- Node.js and npm installed
+- A [Vonage Developer Account](https://developer.vonage.com).
+- Node.js and npm installed.
 
 ## Getting Started
 
 1. Clone the repository and change directories
    ```bash
-   git clone https://github.com/Vonage-Community/demo-sim-swap_verifyv2-javascript-multifactor_authentication.git
+   git clone https://github.com/Vonage-Community/demo-sim-swap_verifyv2-javascript-multifactor_authentication
    cd demo-sim-swap_verifyv2-javascript-multifactor_authentication
    ```
 2. Install the required packages:
@@ -33,15 +33,17 @@ This project is a web application demonstrating how to strengthen multifactor se
    mv .env.example .env
    ```
    ```bash
-   VONAGE_API_KEY=<your-api-key>
-   VONAGE_API_SECRET=<your-api-secret>
-   VONAGE_APPLICATION_ID=<your-application-id>
-   VONAGE_PRIVATE_KEY=<path-to-your-private-key>
-   JWT=<jwt-token>
-   MSISDN=<phone-number-to-check>
-   BRAND_NAME=<your-brand-name>
-   RECIPIENT_NUMBER=<number-to-receive-verification>
+    VONAGE_API_SECRET=your_api_secret
+    VONAGE_APPLICATION_ID=your_application_id
+    VONAGE_APPLICATION_PRIVATE_KEY_PATH=/path/to/your/private.key
+
+    JWT=your_jwt_token
    ```
+
+4. You have the choice to set these variables:
+
+* `MAX_AGE`, to set the number of hours to check SIM Swap activity.
+* `RECIPIENT_NUMBER`, to set a different number from the one used during SIM Swap to receive the SMS.
 
 5. Run the application:
    ```bash
