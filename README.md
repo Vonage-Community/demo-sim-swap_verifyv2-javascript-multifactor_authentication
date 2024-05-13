@@ -38,12 +38,11 @@ This project is a web application demonstrating how to strengthen multifactor se
     VONAGE_APPLICATION_PRIVATE_KEY_PATH=/path/to/your/private.key
 
     JWT=your_jwt_token
+
+    MAX_AGE=72
    ```
 
-4. You have the choice to set these variables:
-
-* `MAX_AGE`, to set the number of hours to check SIM Swap activity.
-* `RECIPIENT_NUMBER`, to set a different number from the one used during SIM Swap to receive the SMS.
+4. You have the choice to set `RECIPIENT_NUMBER`, to define a different phone number from the one used during SIM Swap to receive the SMS.
 
 5. Run the application:
    ```bash
